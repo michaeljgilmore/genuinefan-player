@@ -13,7 +13,12 @@ import { capabilities, type Channel } from "../lib/api";
 import { cn } from "../lib/format";
 import { useSystem } from "../stores/system";
 import { useUi } from "../stores/ui";
+import { useNavigate } from "react-router";
+import { paths } from "../lib/routes";
+import { useFandom } from "../stores/fandom";
 import { BackupSection } from "./BackupSection";
+import { LogoMark } from "./Brand";
+import { FanSignalsSettings } from "./FanSignals";
 import { AccentPicker, LayoutSection } from "./CustomizeSection";
 import { Modal } from "./Modal";
 
@@ -86,9 +91,15 @@ export function SettingsDialog() {
   const lang = useI18n((s) => s.lang);
   const setLang = useI18n((s) => s.setLang);
 
+  const navigate = useNavigate();
+  const loadFandom = useFandom((s) => s.load);
+
   useEffect(() => {
-    if (open) void load();
-  }, [open, load]);
+    if (open) {
+      void load();
+      void loadFandom();
+    }
+  }, [open, load, loadFandom]);
 
   useEffect(() => {
     if (info) setChannel(info.ytdlp.channel);
@@ -151,6 +162,13 @@ export function SettingsDialog() {
             options={LANGUAGES.map(({ id, name }): [Lang, ReactNode] => [id, <span lang={id}>{name}</span>])}
           />
         </section>
+
+        <FanSignalsSettings
+          onOpenFandom={() => {
+            setOpen(false);
+            navigate(paths.fandom);
+          }}
+        />
 
         <LayoutSection />
 
@@ -243,6 +261,24 @@ export function SettingsDialog() {
           )}
         </section>
         )}
+
+        <section className="flex flex-col gap-2">
+          <h3 className="text-xs font-medium text-fg-3">{t.settings.about}</h3>
+          <div className="flex flex-col gap-2 rounded-[16px] bg-surface-1 p-4 text-sm text-fg-2 ring-1 ring-line">
+            <p className="flex items-center gap-2 font-semibold text-fg">
+              <LogoMark className="size-6" /> GenuineFan Player <span className="font-normal text-fg-3">{__APP_VERSION__}</span>
+            </p>
+            <p>{t.settings.aboutBody}</p>
+            <p>
+              <a href="https://github.com/Ernani1234/musike" target="_blank" rel="noreferrer" className="font-medium text-accent-text underline-offset-2 hover:underline">
+                {t.settings.aboutInspired}
+              </a>{" "}
+              {t.settings.aboutLicense}
+            </p>
+            <p>{t.settings.aboutYoutube}</p>
+            <p>{t.settings.aboutListening}</p>
+          </div>
+        </section>
       </div>
     </Modal>
   );

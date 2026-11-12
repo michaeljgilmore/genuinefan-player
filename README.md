@@ -1,8 +1,92 @@
 <div align="center">
 
-<img src="desktop/build/icon.png" width="96" alt="Musike logo: three equalizer bars forming an M" />
+<img src="desktop/build/icon.png" width="96" alt="GenuineFan logo: a hand holding up a checked ticket inside a blue starburst" />
 
-# Musike
+# GenuineFan Player
+
+**Listen like a fan. Prove it with Fan Signals.**
+
+A private [GenuineFan](https://genuinefan.vip) experiment: a music player where how you actually listen (searches,
+full plays, repeats, saves, daily streaks) becomes per-artist proof of fandom for GenuineFan VIP.
+
+*Inspired by [Musike](https://github.com/Ernani1234/musike) (MIT) by Ernani1234.*
+
+![MIT license](https://img.shields.io/badge/license-MIT-6D3FD0?style=flat-square&labelColor=17123A)
+![Status: private experiment](https://img.shields.io/badge/status-private%20experiment-C72E7B?style=flat-square&labelColor=17123A)
+
+</div>
+
+> [!WARNING]
+> **Private, non-commercial experiment. Not a public GenuineFan service yet.**
+> GenuineFan Player is inspired by and built on [Musike](https://github.com/Ernani1234/musike) by Ernani Neto
+> (Ernani1234), used under the MIT license; the original [LICENSE](LICENSE) and copyright notice are kept unchanged.
+> Its current playback path (provider `youtube-experimental`) extracts YouTube streams with yt-dlp, which goes against
+> [YouTube's Terms of Service](https://www.youtube.com/t/terms). It is enabled by default **only for local development**
+> and must not be offered as a public service, monetized, or connected to genuinefan.vip in production. Plays from it
+> count as **unverified** in Fan Signals. The way forward is licensed playback through official SDKs (Spotify Web
+> Playback SDK, Apple MusicKit JS); see [docs/genuinefan-integration.md](docs/genuinefan-integration.md).
+
+## What's different from Musike
+
+- **GenuineFan look:** the GenuineFan starburst mark on every icon (web/PWA, desktop, Android, iOS), GenuineFan's
+  violet/pink gradient and ink palette, Plus Jakarta Sans (GenuineFan's typeface), a GenuineFan home hero.
+- **Fan Signals** (opt-in): searches, plays with how much was actually heard, repeats and saves build a fandom score
+  per artist, with tiers that match GenuineFan (Fan 25+, GenuineFan 70+, GenuineFan VIP 85+), badges and streaks.
+  See **Your Fandom** in the sidebar. Off until you turn it on; Settings > Fan Signals has the switch and
+  *Clear listening history*.
+- **GenuineFan link and sync:** link the player to your GenuineFan account, then share signed per-artist summaries
+  (never raw history, track names or search text). GenuineFan's receiving endpoint doesn't exist yet, so sync is
+  off by default and the app shows exactly what would be sent. Contract: [docs/genuinefan-integration.md](docs/genuinefan-integration.md).
+- **Music providers:** a `MusicProvider` interface (`server/src/providers/`) with the inherited YouTube path as
+  `youtube-experimental` and typed `spotify` / `apple-music` stubs for licensed playback.
+- **Own IDs:** desktop `vip.genuinefan.player.desktop`, Android `vip.genuinefan.player.android`, iOS
+  `vip.genuinefan.player.ios`. The server listens on `127.0.0.1` by default.
+- **Not changed on purpose:** internal identifiers that would break existing data (the `musike-backup` file format,
+  `musike:*` local-storage keys, the `x-musike-lang` header, `MUSIKE_*` environment variables, native bridge names).
+- **Downloads:** this fork publishes no releases. The installation sections below come from the upstream README and
+  link to upstream Musike builds, which don't include these changes.
+
+## Run it locally
+
+Needs Node 24 (Node 26 works) and pnpm 10 (`corepack enable`).
+
+```bash
+pnpm install
+pnpm dev            # server on http://127.0.0.1:4180 + web app on http://localhost:5173
+pnpm test           # Fan Signals scoring, consent, signing tests
+pnpm typecheck
+pnpm build && pnpm start   # production web build served by the server on http://127.0.0.1:4180
+pnpm desktop        # Electron app
+```
+
+### Configuration
+
+| Variable | Default | Use |
+|---|---|---|
+| `GENUINEFAN_YOUTUBE_EXPERIMENTAL` | on unless `NODE_ENV=production` | Turns the `youtube-experimental` provider on (`1`) or off (`0`). The Docker image sets `NODE_ENV=production`, so it's off there unless forced. Never enable it on a public deployment. |
+| `GENUINEFAN_DEFAULT_PROVIDER` | `youtube-experimental` | `spotify` and `apple-music` exist but answer "not configured" (HTTP 501) |
+| `GENUINEFAN_RECORD_LISTENING` | on | Operator kill switch. `0` drops every Fan Signals event whatever listeners chose. Listeners still opt in individually. |
+| `GENUINEFAN_APP_URL` | `https://genuinefan.vip` | Where "Link to GenuineFan" opens `/player/link` |
+| `GENUINEFAN_FAN_SIGNALS_ENDPOINT` | unset | GenuineFan's `ingestFanSignals` HTTPS endpoint. Unset = Sync now sends nothing |
+| `GENUINEFAN_STREAMING_CONFIG_URL` | this fork's `mobile/streaming.json` on GitHub | Remote YouTube client list; `off` to never fetch it |
+| `HOST` | `127.0.0.1` | `0.0.0.0` to reach the server from other devices (no login: trusted networks only) |
+| `VITE_GENUINEFAN_APP_URL`, `VITE_GENUINEFAN_FAN_SIGNALS_ENDPOINT` | | Same as above, baked into the Android/iOS build |
+
+Routes added: `GET /api/providers`; `POST`/`GET`/`DELETE /api/listening`; `GET /api/fan-signals`,
+`PUT /api/fan-signals/consent`, `POST`/`DELETE /api/fan-signals/link`, `GET /api/fan-signals/preview`,
+`POST /api/fan-signals/sync`.
+
+---
+
+# Original Musike README
+
+*Kept from upstream for reference. "Musike" below refers to the original project; download and Docker image links point to upstream builds.*
+
+<div align="center">
+
+*(Musike's own logo, three equalizer bars forming an M, is in the upstream repository; this fork's icons are GenuineFan's.)*
+
+## Musike
 
 **Your music, uninterrupted.**
 
@@ -195,7 +279,7 @@ xattr -dr com.apple.quarantine /Applications/Musike.app
 
 Like on Windows, the first launch downloads yt-dlp, Deno and FFmpeg. Everything lives in `~/Library/Application Support/Musike` (same folders as the table above), and updating (dragging the new version over the old one) keeps your library.
 
-To build it yourself on a Mac: `pnpm install && pnpm --filter musike-desktop dist:mac` (creates the `.dmg` files in `release`).
+To build it yourself on a Mac: `pnpm install && pnpm --filter genuinefan-player-desktop dist:mac` (creates the `.dmg` files in `release`).
 
 ### Option 3: Linux app
 
@@ -208,7 +292,7 @@ From the [latest release](https://github.com/Ernani1234/musike/releases/latest),
 
 Like on Windows and macOS, the first launch downloads yt-dlp, Deno and FFmpeg. Everything lives in `~/.config/Musike` (same folders as the table above). To update, install the new `.deb` over the old one or replace the AppImage: your library stays.
 
-To build it yourself on Linux: `pnpm install && pnpm --filter musike-desktop dist:linux` (creates the `.deb` and `.AppImage` files in `release`).
+To build it yourself on Linux: `pnpm install && pnpm --filter genuinefan-player-desktop dist:linux` (creates the `.deb` and `.AppImage` files in `release`).
 
 ### Option 4: Android app
 
@@ -220,7 +304,7 @@ On the phone, download `Musike-Setup-<version>-Android.apk` from the [latest rel
 - Audio only for now: the video mode is available on the desktop app and in the browser.
 - **Android TV:** install the same APK on the TV (for example with a file manager app, or `adb install`). Musike shows up in the TV launcher and switches to a remote-friendly interface by itself.
 
-To build the APK yourself you need JDK 21 and the Android SDK (Android Studio installs both): `pnpm install && pnpm --filter @musike/mobile apk` (creates `release/Musike-Setup-<version>-Android.apk`; unsigned unless `mobile/android/keystore.properties` points to your signing key).
+To build the APK yourself you need JDK 21 and the Android SDK (Android Studio installs both): `pnpm install && pnpm --filter @genuinefan-player/mobile apk` (creates `release/Musike-Setup-<version>-Android.apk`; unsigned unless `mobile/android/keystore.properties` points to your signing key).
 
 ### Option 5: iPhone app
 
@@ -233,7 +317,7 @@ On iOS 16 and newer, also turn on **Settings > Privacy & Security > Developer Mo
 
 Like on Android, it works on its own (no computer or server), keeps playing with the screen locked, and has controls on the lock screen, in Control Center and on headphones. Audio only for now.
 
-To build it yourself on a Mac with Xcode: `pnpm install && pnpm --filter @musike/mobile ipa` (creates `release/Musike-Setup-<version>-iOS.ipa`).
+To build it yourself on a Mac with Xcode: `pnpm install && pnpm --filter @genuinefan-player/mobile ipa` (creates `release/Musike-Setup-<version>-iOS.ipa`).
 
 ### Option 6: Docker
 
@@ -474,8 +558,10 @@ Ideas and bug reports are welcome in [Issues](https://github.com/Ernani1234/musi
 
 ## Legal notice
 
-Musike is a project for **personal and educational use**. Playing YouTube content without ads by extracting its streams goes against [YouTube's Terms of Service](https://www.youtube.com/t/terms); public services that did this, such as the Groovy and Rythm bots, were shut down after notices from Google. Don't offer Musike as a public service, don't monetize it, and respect the artists' rights. The project doesn't host, distribute or store YouTube content beyond the temporary local cache of whoever runs it.
+**GenuineFan Player (this fork):** a private, non-commercial experiment. It is not a GenuineFan product or service, is not offered to GenuineFan users, and must not be deployed publicly, monetized, or connected to genuinefan.vip in production while it plays YouTube content through extraction. The `youtube-experimental` provider is on by default only for local development. Any GenuineFan-facing version must use licensed playback (official Spotify / Apple Music SDKs with the listener's own account) and follow each service's developer terms. Listening events stay local; nothing is sent to GenuineFan.
+
+**Original notice from Musike:** Musike is a project for **personal and educational use**. Playing YouTube content without ads by extracting its streams goes against [YouTube's Terms of Service](https://www.youtube.com/t/terms); public services that did this, such as the Groovy and Rythm bots, were shut down after notices from Google. Don't offer Musike as a public service, don't monetize it, and respect the artists' rights. The project doesn't host, distribute or store YouTube content beyond the temporary local cache of whoever runs it.
 
 ## License
 
-[MIT](LICENSE) © 2026 Ernani Neto
+[MIT](LICENSE) © 2026 Ernani Neto. GenuineFan Player is a modified fork distributed under the same MIT license; the original copyright and permission notice are kept in [LICENSE](LICENSE).

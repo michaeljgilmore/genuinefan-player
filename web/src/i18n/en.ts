@@ -1,5 +1,5 @@
 /**
- * English: Musike's own language and the source of truth for every other one.
+ * English: GenuineFan Player's own language (inherited from Musike) and the source of truth for every other one.
  * Other languages are typed as `Messages`, so a missing or extra key fails the build.
  */
 
@@ -58,6 +58,7 @@ export const en = {
     favorites: "Favorites",
     recentlyPlayed: "Recently played",
     history: "History",
+    fandom: "Your Fandom",
   },
 
   home: {
@@ -163,7 +164,7 @@ export const en = {
     cantPlay: (title: string, reason: string) => `Couldn't play "${title}". ${reason}`,
     aTrack: "this track",
     browserCantPlay: "The browser couldn't play this format.",
-    serverDown: "Can't reach the Musike server. Is it running?",
+    serverDown: "Can't reach the GenuineFan Player server. Is it running?",
     streamFailed: "YouTube stopped serving this track. Try it again in a moment.",
     offline: "You're offline. Connect to the internet to play music.",
     httpError: (status: number) => `Error ${status}`,
@@ -266,7 +267,7 @@ export const en = {
     failed: "Search failed",
     emptyTitle: "Many songs at once",
     emptyBody:
-      "Musike searches for each one and picks the best match. Check them, swap any that came out wrong, then play, favorite or send them all to a playlist.",
+      "GenuineFan Player searches for each one and picks the best match. Check them, swap any that came out wrong, then play, favorite or send them all to a playlist.",
   },
 
   selection: {
@@ -319,6 +320,15 @@ export const en = {
 
   settings: {
     title: "Settings",
+    about: "About",
+    aboutBody:
+      "GenuineFan Player is a private, non-commercial GenuineFan experiment: a music player where how you listen becomes proof of fandom. It is not a public GenuineFan service yet.",
+    aboutInspired: "Inspired by Musike (MIT) by Ernani1234.",
+    aboutLicense: "The original MIT license and copyright notice are kept in this project's LICENSE file.",
+    aboutYoutube:
+      "Its YouTube playback extracts streams, which goes against YouTube's Terms of Service. It is for local development only: don't offer it publicly or monetize it. Licensed playback through Spotify and Apple Music is planned.",
+    aboutListening:
+      "Fan Signals are off until you turn them on. Raw listening history stays on this device or your own server; only per-artist summaries you choose to share are sent to GenuineFan.",
     appearance: "Appearance",
     theme: "Theme",
     dark: "Dark",
@@ -346,24 +356,24 @@ export const en = {
     toStable: "Back to Stable",
     updateTo: (version: string) => `Update to ${version}`,
     check: "Check and update",
-    noWinget: "winget isn't available. Install yt-dlp manually and restart Musike.",
+    noWinget: "winget isn't available. Install yt-dlp manually and restart GenuineFan Player.",
     starting: "Starting",
     denoRole: "Solves YouTube's challenges",
     ffmpegRole: "Merges video and audio in HD mode",
     depMissingBefore: "Not found. In a terminal:",
-    depMissingAfter: "and restart Musike.",
+    depMissingAfter: "and restart GenuineFan Player.",
   },
 
   customize: {
     accent: "Accent color",
     customColor: "Custom color",
     colors: {
+      genuinefan: "GenuineFan",
+      genuinefanPink: "GenuineFan Pink",
       volt: "Volt",
       mint: "Mint",
       aqua: "Aqua",
       sky: "Sky",
-      violet: "Violet",
-      pink: "Pink",
       coral: "Coral",
       amber: "Amber",
     },
@@ -382,12 +392,12 @@ export const en = {
 
   backup: {
     yourData: "Your data",
-    body: "Take your playlists, favorites and history to another computer or to the desktop app: export a file here and import it into the other Musike.",
+    body: "Take your playlists, favorites and history to another computer or to the desktop app: export a file here and import it into the other GenuineFan Player (Musike backups work too).",
     export: "Export",
     exporting: "Exporting",
     import: "Import",
     importing: "Importing",
-    pickFile: "Choose a Musike backup file",
+    pickFile: "Choose a GenuineFan Player or Musike backup file",
     created: (playlists: number, favorites: number) =>
       `Backup created: ${count(playlists, "playlist", "playlists")} and ${count(favorites, "favorite", "favorites")}`,
     exportedAt: (date: string, time: string) => `Exported on ${date} at ${time}`,
@@ -411,8 +421,102 @@ export const en = {
     addedTracks: (n: number) => count(n, "track added", "tracks added"),
     addedFavorites: (n: number) => count(n, "favorite", "favorites"),
     unreadable: "Couldn't read the file. It needs to be a .musike.json backup.",
-    notBackup: "This file isn't a Musike backup.",
-    newer: "This backup was made by a newer Musike. Update the app to import it.",
+    notBackup: "This file isn't a GenuineFan Player (or Musike) backup.",
+    newer: "This backup was made by a newer GenuineFan Player. Update the app to import it.",
+  },
+
+  fandom: {
+    title: "Your Fandom",
+    eyebrow: "GenuineFan VIP",
+    tagline: "Your plays are your proof.",
+    intro:
+      "GenuineFan Player turns how you actually listen (searches, full plays, repeats, saves and daily streaks) into a fandom score for every artist. Turn on Fan Signals to start building yours.",
+    introOn:
+      "GenuineFan Player turns how you actually listen (searches, full plays, repeats, saves and daily streaks) into a fandom score for every artist. Fan Signals is on, so every full listen counts.",
+    privacyNote:
+      "Scores are computed on this device. Raw listening history never leaves it; sharing per-artist summaries with GenuineFan is a separate choice.",
+    enable: "Turn on Fan Signals",
+    disabledByOperator: "Fan Signals recording is switched off on this server (GENUINEFAN_RECORD_LISTENING=0).",
+    recordingOn: "Fan Signals on: your listening now builds your fandom",
+    recordingOff: "Fan Signals off: nothing new is recorded",
+    sharingOn: "Sharing per-artist summaries with GenuineFan",
+    sharingOff: "Stopped sharing with GenuineFan",
+    cleared: "Listening history cleared",
+    linkOpened: "Approve this player on GenuineFan, then come back and Sync now",
+    unlinked: "Player unlinked from GenuineFan",
+    synced: (n: number) => `Sent summaries for ${count(n, "artist", "artists")} to GenuineFan`,
+    syncFailed: (message: string) => `Sync failed: ${message}`,
+    empty: "No signals yet",
+    emptyBody: "Play some music. Hearing an artist all the way through counts far more than quick skips.",
+    streak: "Listening streak",
+    days: (n: number) => count(n, "day", "days"),
+    minutes: "Minutes listened",
+    artists: "Artists",
+    plays: "Qualified plays",
+    topArtists: "Top artists",
+    score: "Fandom score",
+    windowNote: (days: number) => `Last ${days} days`,
+    tiers: { listener: "Listener", fan: "Fan", genuine: "GenuineFan", vip: "GenuineFan VIP" },
+    nextTier: (points: number, tier: string) => `${points} points to ${tier}`,
+    components: {
+      plays: "Plays",
+      completion: "Full listens",
+      depth: "Catalog depth",
+      consistency: "Consistency",
+      streak: "Streak",
+      repeats: "Repeats",
+      saves: "Saves",
+      searches: "Searches",
+    },
+    badges: {
+      verified_listener: "Verified listener",
+      deep_cuts: "Deep cuts",
+      on_repeat: "On repeat",
+      streak_7: "7-day streak",
+      streak_30: "30-day streak",
+      completionist: "Completionist",
+      collector: "Collector",
+      seeker: "Seeker",
+      long_haul: "Long haul",
+    },
+    flags: {
+      unverified_plays: "Includes unverified plays (experimental YouTube, 25% weight)",
+      implausible_volume: "Unusually heavy listening in one day (score halved)",
+      loop_pattern: "Mostly one track on loop (score reduced)",
+      burst: "Most plays crammed into one day (score reduced)",
+    },
+    verified: "Verified",
+    unverified: "Unverified",
+    unverifiedNote:
+      "Plays in this build come from the experimental YouTube path, so they count at 25% and can't reach GenuineFan VIP. Licensed Spotify and Apple Music playback will count in full.",
+    linkTitle: "GenuineFan account",
+    linkNone: "Link this player to your GenuineFan account to use your listening as proof of fandom.",
+    linkPending: "Waiting for approval. Approve this player on GenuineFan, then Sync now.",
+    linkLinked: (account: string | null) => (account ? `Linked to ${account}` : "Linked to your GenuineFan account"),
+    link: "Link to GenuineFan",
+    relink: "Open the approval page again",
+    unlink: "Unlink",
+    share: "Share per-artist summaries with GenuineFan",
+    shareBody:
+      "Sends signed counts per artist (plays, full listens, active days, streak, saves, searches). Never track names, search text or when single plays happened.",
+    syncNow: "Sync now",
+    preview: "Preview what's shared",
+    hidePreview: "Hide preview",
+    lastSync: (when: string, ok: boolean) => (ok ? `Last sync ${when}` : `Last attempt ${when} failed`),
+    noEndpoint:
+      "GenuineFan doesn't accept player summaries yet, so Sync now sends nothing. The preview shows exactly what would go.",
+    settingsTitle: "Fan Signals",
+    record: "Record fan signals on this device",
+    recordBody: "Searches, plays, repeats and saves build your fandom score. Off until you turn it on.",
+    clear: "Clear listening history",
+    clearConfirm: "Delete all listening recorded on this device? Your fandom scores start over.",
+    events: (n: number) => `${count(n, "event", "events")} stored on this device`,
+    open: "Open Your Fandom",
+    heroTitle: "Your plays are your proof",
+    heroBody: "Listen like a fan, and GenuineFan can tell. Turn on Fan Signals to build a verified fandom score.",
+    heroBodyOn: "Fan Signals is on. Search and play your favorite artists to start building your fandom score.",
+    heroCta: "See your fandom",
+    topLine: (name: string, tier: string, score: number) => `${name}: ${tier} · ${score}`,
   },
 
   toasts: {

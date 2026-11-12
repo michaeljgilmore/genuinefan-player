@@ -20,8 +20,8 @@ export function TitleBar() {
         paddingRight: "calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 12px)",
       }}
     >
-      <LogoMark className="size-[18px] shrink-0 text-accent-text" />
-      <span className="shrink-0 text-[13px] font-semibold tracking-tight">musike</span>
+      <LogoMark className="size-[18px] shrink-0" />
+      <span className="shrink-0 text-[13px] font-semibold tracking-tight">GenuineFan Player</span>
       {track && (
         <span className="flex min-w-0 items-center gap-2 pl-2 text-xs text-fg-3">
           <Equalizer live={live} className="h-3 shrink-0" />

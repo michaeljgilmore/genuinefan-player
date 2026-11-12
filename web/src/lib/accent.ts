@@ -6,12 +6,13 @@
 
 type Rgb = [number, number, number];
 
-const DARK_SURFACE: Rgb = [0x18, 0x1a, 0x20]; // --surface-2, dark theme
-const LIGHT_SURFACE: Rgb = [0xf2, 0xf3, 0xf6]; // --surface-2, light theme
+const DARK_SURFACE: Rgb = [0x1a, 0x17, 0x31]; // --surface-2, dark theme
+const LIGHT_SURFACE: Rgb = [0xf8, 0xf6, 0xfc]; // --surface-2, light theme
 const WHITE: Rgb = [255, 255, 255];
 const BLACK: Rgb = [0, 0, 0];
 
-export const DEFAULT_ACCENT = "#c3ec52";
+/** GenuineFan violet (--gf-violet in genuine-fan/src/config/theme.css). Musike's original was Volt #c3ec52. */
+export const DEFAULT_ACCENT = "#6d3fd0";
 
 export const isHex = (v: unknown): v is string => typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v);
 

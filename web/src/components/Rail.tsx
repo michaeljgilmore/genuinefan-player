@@ -6,6 +6,7 @@ import {
   HouseIcon,
   MagnifyingGlassIcon,
   PlusIcon,
+  SealCheckIcon,
 } from "@phosphor-icons/react";
 import { useState, type ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router";
@@ -24,6 +25,7 @@ const nav = [
   { to: paths.home, key: "home", Icon: HouseIcon, end: true },
   { to: paths.search, key: "search", Icon: MagnifyingGlassIcon, end: false },
   { to: paths.library, key: "library", Icon: BooksIcon, end: false },
+  { to: paths.fandom, key: "fandom", Icon: SealCheckIcon, end: false },
 ] as const;
 
 /** Settings entry. Shows a dot (and on the wide rail, an "Update" pill) when yt-dlp needs attention. */
@@ -105,7 +107,7 @@ export function Rail() {
     <aside className="island hidden w-[78px] shrink-0 md:flex wide:w-[256px]">
       <div className="island-core flex w-full flex-col overflow-hidden">
         <div className="flex h-16 items-center justify-center wide:justify-start wide:px-4 [@media(max-height:540px)]:h-12">
-          <LogoMark className="size-8 text-accent-text wide:hidden" />
+          <LogoMark className="size-9 wide:hidden" />
           <span className="hidden wide:block">
             <Logo />
           </span>

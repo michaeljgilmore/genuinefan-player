@@ -1,4 +1,4 @@
-package app.musike.android;
+package vip.genuinefan.player.android;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -42,7 +42,7 @@ public class PlaybackService extends Service {
     private static final String TAG = "MusikePlayback";
     private static final String CHANNEL = "playback";
     private static final int NOTIFICATION_ID = 1;
-    private static final String ACTION = "app.musike.android.action.";
+    private static final String ACTION = "vip.genuinefan.player.android.action.";
 
     /** What the app last reported. */
     static final class NowPlaying {
@@ -282,7 +282,7 @@ public class PlaybackService extends Service {
 
     private Notification buildNotification() {
         Notification.Builder b = Build.VERSION.SDK_INT >= 26 ? new Notification.Builder(this, CHANNEL) : new Notification.Builder(this);
-        b.setSmallIcon(R.drawable.ic_stat_musike)
+        b.setSmallIcon(R.drawable.ic_stat_genuinefan)
             .setContentTitle(state.title)
             .setContentText(state.artist)
             .setLargeIcon(artwork)

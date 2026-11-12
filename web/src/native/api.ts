@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import {
@@ -13,20 +14,35 @@ import {
 } from "../../../server/src/browse";
 import { msg, tr, type MsgKey } from "../../../server/src/i18n";
 import * as library from "../../../server/src/library";
+import * as listening from "../../../server/src/listening";
 import { findVideoFor, radio, search, suggestions } from "../../../server/src/search";
 import { HttpError, VIDEO_ID } from "../../../server/src/types";
 import { getLang, getT } from "../i18n";
 import { ApiError, type MusikeApi, type SystemInfo } from "../lib/apiTypes";
 import "./android";
 import { media } from "./media";
-import { nativeStorage } from "./storage";
+import { nativeListeningStorage, nativeStorage } from "./storage";
 import { forgetUrl, resolveAudio } from "./streams";
 
-// The Android backend: the Musike server's own code (search, genres, artists, albums, library), running on the
+// The Android backend: the GenuineFan Player server's own code (search, genres, artists, albums, library), running on the
 // phone instead of behind HTTP. The build swaps lib/api.ts for this module (see vite.config.ts).
 export * from "../lib/apiTypes";
 
 library.useLibraryStorage(nativeStorage);
+listening.useListeningStorage(nativeListeningStorage);
+
+/** Fan Signals settings baked in at build time (VITE_GENUINEFAN_*); the phone has no server environment. */
+function fanOptions() {
+  const env = import.meta.env as Record<string, string | undefined>;
+  const platform = `app-${Capacitor.getPlatform()}`;
+  return {
+    appUrl: env.VITE_GENUINEFAN_APP_URL || "https://genuinefan.vip",
+    endpoint: env.VITE_GENUINEFAN_FAN_SIGNALS_ENDPOINT || null,
+    version: __APP_VERSION__,
+    platform,
+    deviceLabel: `GenuineFan Player (${platform})`,
+  };
+}
 
 const fail = (status: number, key: MsgKey) => new ApiError(status, tr(getLang(), msg(key)));
 
@@ -106,6 +122,15 @@ export const api: MusikeApi = {
       if (typeof b.version !== "number" || b.version > 1) throw fail(400, "newerBackup");
       return library.importLibrary(b.library, mode);
     }),
+
+  recordListening: (e) => call(async () => void (await listening.recordListening(e))),
+  clearListening: () => call(() => listening.clearListening()),
+  fanSignals: (tz) => call(() => listening.getFanSignals({ tzOffsetMinutes: tz, endpointConfigured: !!fanOptions().endpoint })),
+  setFanConsent: (patch) => call(() => listening.setConsent(patch)),
+  startFanLink: () => call(() => listening.startLink(fanOptions())),
+  unlinkFan: () => call(() => listening.unlink()),
+  previewFanSync: (tz) => call(() => listening.previewPayload({ ...fanOptions(), tzOffsetMinutes: tz })),
+  syncFanSignals: (tz) => call(() => listening.syncNow({ ...fanOptions(), tzOffsetMinutes: tz })),
 
   system: async () => SYSTEM,
   updateYtdlp: async () => {

@@ -57,17 +57,18 @@ export default defineConfig(({ mode }) => {
         ? nativeBackend()
         : VitePWA({
             registerType: "autoUpdate",
-            includeAssets: ["favicon.svg", "apple-touch-icon.png"],
+            includeAssets: ["favicon.svg", "favicon.ico", "favicon-32.png", "apple-touch-icon.png"],
             manifest: {
-              name: "Musike",
-              short_name: "Musike",
-              description: "Your music, uninterrupted.",
+              name: "GenuineFan Player",
+              short_name: "GF Player",
+              description: "GenuineFan Player: listen like a fan, prove it with Fan Signals. A private GenuineFan experiment, inspired by Musike.",
               lang: "en",
-              theme_color: "#0B0C0F",
-              background_color: "#0B0C0F",
+              theme_color: "#0D0B1C",
+              background_color: "#0D0B1C",
               display: "standalone",
               start_url: "/",
               icons: [
+                { src: "favicon-64.png", sizes: "64x64", type: "image/png" },
                 { src: "icon-192.png", sizes: "192x192", type: "image/png" },
                 { src: "icon-512.png", sizes: "512x512", type: "image/png" },
                 { src: "icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },

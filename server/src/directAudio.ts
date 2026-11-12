@@ -8,11 +8,17 @@ import { text, withClient } from "./search.js";
  * YouTube only serves the first megabyte of a stream to most clients unless the request carries a proof-of-origin
  * token. A few clients don't need one; VISIONOS (the Apple Vision Pro app) is the one yt-dlp itself relies on, and
  * its URLs need no deciphering either. When YouTube changes that, the list of clients can be updated remotely
- * (mobile/streaming.json in the repository) without shipping a new version.
+ * (mobile/streaming.json in the GenuineFan Player fork) without shipping a new version.
  */
 
 export const DEFAULT_CLIENTS = ["VISIONOS"];
-const REMOTE_CONFIG = "https://raw.githubusercontent.com/Ernani1234/musike/main/mobile/streaming.json";
+/**
+ * The fork's own copy (not upstream Musike's), so this experiment never depends on another project's repository.
+ * Override with GENUINEFAN_STREAMING_CONFIG_URL, or set it to "off" to always use DEFAULT_CLIENTS.
+ */
+const REMOTE_CONFIG =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.GENUINEFAN_STREAMING_CONFIG_URL ||
+  "https://raw.githubusercontent.com/michaeljgilmore/genuinefan-player/main/mobile/streaming.json";
 
 export interface DirectAudio {
   url: string;
@@ -31,6 +37,7 @@ export const validClients = (v: unknown): string[] | null =>
  * and Android; a platform can have its own (`ios`).
  */
 export async function fetchRemoteClients(key: "clients" | "ios" = "clients"): Promise<string[] | null> {
+  if (REMOTE_CONFIG === "off") return null;
   try {
     const res = await fetch(REMOTE_CONFIG, { signal: AbortSignal.timeout(6000) });
     return validClients(((await res.json()) as Record<string, unknown>)[key]);

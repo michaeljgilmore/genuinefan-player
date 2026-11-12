@@ -2,17 +2,23 @@ import { existsSync } from "node:fs";
 import { createServer } from "node:net";
 import fastifyStatic from "@fastify/static";
 import Fastify from "fastify";
-import { ALBUM_ID, album, ARTIST_ID, artist, GENRE_ID, genre, genreArtists, genres, searchAlbums } from "./browse.js";
+import { ALBUM_ID, ARTIST_ID, GENRE_ID, genre, genreArtists, genres } from "./browse.js";
 import { config } from "./config.js";
 import * as library from "./library.js";
 import { fileStorage } from "./libraryFile.js";
-import { findVideoFor, radio, search, suggestions } from "./search.js";
+import * as listening from "./listening.js";
+import { listeningFileStorage } from "./listeningFile.js";
+import { activeProvider, listProviders, provider } from "./providers/index.js";
+import { findVideoFor, radio, suggestions } from "./search.js";
 import { proxyStream, serveFile } from "./stream.js";
 import { langOf, msg, tr } from "./i18n.js";
 import { presentJob, startJob, systemInfo, type Channel } from "./system.js";
 import { refreshTools, type Tools } from "./tools.js";
 import { HttpError, VIDEO_ID } from "./types.js";
 import { downloadHd, pruneCache, resolveStreams } from "./ytdlp.js";
+
+/** Routes that only exist for the YouTube path (genres, radio, streams) refuse to run when it is switched off. */
+const requireYoutube = () => provider("youtube-experimental");
 
 function videoId(params: unknown): string {
   const id = (params as { id?: string }).id ?? "";
@@ -39,9 +45,10 @@ export interface RunningServer {
   close: () => Promise<void>;
 }
 
-/** Builds the Musike HTTP server (API + web app) and starts listening. */
+/** Builds the GenuineFan Player HTTP server (API + web app) and starts listening. */
 export async function startServer(opts: StartOptions = {}): Promise<RunningServer> {
   library.useLibraryStorage(fileStorage());
+  listening.useListeningStorage(listeningFileStorage(), { record: config.genuineFan.recordListening });
   const found = await refreshTools();
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? "warn" } });
 
@@ -56,6 +63,9 @@ export async function startServer(opts: StartOptions = {}): Promise<RunningServe
 
   app.get("/api/health", async () => ({ ok: true }));
 
+  // Music providers (server/src/providers): which ones exist, which are on, how each plays.
+  app.get("/api/providers", async () => ({ default: config.providers.default, providers: listProviders() }));
+
   // System: yt-dlp status and one-click update
 
   app.get("/api/system", (req) => systemInfo(langOf(req)));
@@ -69,24 +79,32 @@ export async function startServer(opts: StartOptions = {}): Promise<RunningServe
 
   app.get("/api/search", async (req) => {
     const { q, type } = req.query as { q?: string; type?: string };
-    return { tracks: await search(query(q), type === "video" ? "video" : "song", langOf(req)) };
+    return { tracks: await activeProvider().search(query(q), type === "video" ? "video" : "song", langOf(req)) };
   });
 
   app.get("/api/suggest", async (req) => {
     const { q } = req.query as { q?: string };
     if (!q?.trim()) return { suggestions: [] };
+    requireYoutube();
     return { suggestions: await suggestions(q.trim().slice(0, 100), langOf(req)).catch(() => []) };
   });
 
-  app.get("/api/radio/:id", async (req) => ({ tracks: await radio(videoId(req.params)) }));
+  app.get("/api/radio/:id", async (req) => {
+    requireYoutube();
+    return { tracks: await radio(videoId(req.params)) };
+  });
 
   // Browse by genre: genre → its artists or all its songs → an artist's top songs
 
-  app.get("/api/genres", async (req) => ({ genres: await genres(langOf(req)) }));
+  app.get("/api/genres", async (req) => {
+    requireYoutube();
+    return { genres: await genres(langOf(req)) };
+  });
 
   app.get("/api/genres/:gid", async (req) => {
     const { gid } = req.params as { gid: string };
     if (!GENRE_ID.test(gid)) throw new HttpError(400, msg("invalidGenre"));
+    requireYoutube();
     return genre(gid, langOf(req));
   });
 
@@ -96,45 +114,54 @@ export async function startServer(opts: StartOptions = {}): Promise<RunningServe
     const offset = Number((req.query as { offset?: string }).offset ?? 0);
     if (!GENRE_ID.test(gid)) throw new HttpError(400, msg("invalidGenre"));
     if (!Number.isInteger(offset) || offset < 0 || offset > 1000) throw new HttpError(400, msg("invalidOffset"));
+    requireYoutube();
     return genreArtists(gid, offset, langOf(req));
   });
 
   app.get("/api/artists/:aid", async (req) => {
     const { aid } = req.params as { aid: string };
     if (!ARTIST_ID.test(aid)) throw new HttpError(400, msg("invalidArtist"));
-    return artist(aid, langOf(req));
+    return activeProvider().artist(aid, langOf(req));
   });
 
   app.get("/api/albums/:alid", async (req) => {
     const { alid } = req.params as { alid: string };
     if (!ALBUM_ID.test(alid)) throw new HttpError(400, msg("invalidAlbum"));
-    return album(alid, langOf(req));
+    return activeProvider().album(alid, langOf(req));
   });
 
   app.get("/api/search/albums", async (req) => {
     const { q } = req.query as { q?: string };
-    return { albums: await searchAlbums(query(q), langOf(req)) };
+    return { albums: await activeProvider().searchAlbums(query(q), langOf(req)) };
   });
 
   /** The music video for a song, so "Vídeo" mode can show the clip instead of a still cover. */
   app.get("/api/video-for/:id", async (req) => {
     const { title, artist, duration } = req.query as { title?: string; artist?: string; duration?: string };
     if (!title?.trim()) throw new HttpError(400, msg("missingTitle"));
+    requireYoutube();
     const track = await findVideoFor(videoId(req.params), title.slice(0, 200), (artist ?? "").slice(0, 200), Number(duration) || 0);
     return { track };
   });
 
-  // Playback
+  // Playback, through the active provider. Only `youtube-experimental` plays today (proxy-stream); the licensed
+  // providers (Spotify, Apple Music) will play in the client through their official SDKs instead.
 
   /** Resolves stream URLs ahead of time so the next track starts instantly. */
   app.post("/api/prepare/:id", async (req) => {
-    const r = await resolveStreams(videoId(req.params));
-    return { id: r.id, title: r.title, duration: r.duration, hasSdVideo: !!r.video };
+    const r = await activeProvider().resolvePlayback(videoId(req.params));
+    // TODO(genuinefan): return client-sdk resolutions to the web app once it can load the Spotify / MusicKit SDKs.
+    if (r.mode !== "proxy-stream") throw new HttpError(501, `Client-side playback (${r.sdk}) isn't wired into the player yet.`);
+    return { id: r.trackId, title: r.title, duration: r.duration, hasSdVideo: r.hasSdVideo };
   });
 
-  app.get("/api/stream/:id/audio", (req, reply) => proxyStream(req, reply, videoId(req.params), "audio"));
+  app.get("/api/stream/:id/audio", (req, reply) => {
+    requireYoutube();
+    return proxyStream(req, reply, videoId(req.params), "audio");
+  });
 
   app.get("/api/stream/:id/video", async (req, reply) => {
+    requireYoutube();
     const id = videoId(req.params);
     const { q } = req.query as { q?: string };
     if (q === "hd") return serveFile(req, reply, await downloadHd(id), "video/mp4");
@@ -143,11 +170,50 @@ export async function startServer(opts: StartOptions = {}): Promise<RunningServe
     return proxyStream(req, reply, id, "video");
   });
 
+  // Fan Signals (docs/genuinefan-integration.md). Recording is opt-in; only signed per-artist summaries ever leave,
+  // and only when the listener turned sharing on and linked a GenuineFan account.
+
+  const fan = () => ({
+    appUrl: config.genuineFan.appUrl,
+    endpoint: config.genuineFan.fanSignalsEndpoint,
+    version: config.appVersion,
+    platform: config.platform,
+    deviceLabel: `GenuineFan Player (${config.platform})`,
+  });
+  const tzOf = (req: { query: unknown }) => Number((req.query as { tz?: string }).tz ?? 0);
+
+  app.post("/api/listening", async (req) => ({ event: await listening.recordListening(req.body) }));
+
+  app.get("/api/listening", async (req) => {
+    const limit = Number((req.query as { limit?: string }).limit ?? 200);
+    return {
+      recording: await listening.isRecording(),
+      events: await listening.listListening(Number.isInteger(limit) && limit > 0 ? limit : 200),
+    };
+  });
+
+  app.delete("/api/listening", async (_req, reply) => {
+    await listening.clearListening();
+    return reply.code(204).send();
+  });
+
+  app.get("/api/fan-signals", async (req) =>
+    listening.getFanSignals({ tzOffsetMinutes: tzOf(req), endpointConfigured: !!config.genuineFan.fanSignalsEndpoint }),
+  );
+  app.put("/api/fan-signals/consent", async (req) => ({ consent: await listening.setConsent(req.body) }));
+  app.post("/api/fan-signals/link", async () => listening.startLink(fan()));
+  app.delete("/api/fan-signals/link", async (_req, reply) => {
+    await listening.unlink();
+    return reply.code(204).send();
+  });
+  app.get("/api/fan-signals/preview", async (req) => ({ payload: await listening.previewPayload({ ...fan(), tzOffsetMinutes: tzOf(req) }) }));
+  app.post("/api/fan-signals/sync", async (req) => ({ result: await listening.syncNow({ ...fan(), tzOffsetMinutes: tzOf(req) }) }));
+
   // Library
 
   app.get("/api/library", () => library.getLibrary());
 
-  /** Restores a backup file exported by any Musike instance. Big libraries need more than the 1 MB default body. */
+  /** Restores a backup file exported by any GenuineFan Player or Musike instance. Big libraries need more than the 1 MB default body. */
   app.post("/api/library/import", { bodyLimit: 25 * 1024 * 1024 }, async (req) => {
     const body = (req.body ?? {}) as { backup?: { format?: unknown; version?: unknown; library?: unknown }; mode?: unknown };
     const backup = body.backup;

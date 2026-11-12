@@ -1,25 +1,25 @@
 {
-  "name": "musike-desktop",
-  "productName": "Musike",
+  "name": "genuinefan-player-desktop",
+  "productName": "GenuineFan Player",
   "version": "1.5.1",
-  "description": "Your music, uninterrupted.",
-  "author": "Musike",
-  "homepage": "https://github.com/Ernani1234/musike",
-  "desktopName": "musike.desktop",
+  "description": "GenuineFan Player: a private GenuineFan experiment, inspired by Musike (MIT) by Ernani1234.",
+  "author": "GenuineFan (inspired by Musike by Ernani Neto)",
+  "homepage": "https://github.com/michaeljgilmore/genuinefan-player",
+  "desktopName": "genuinefan-player.desktop",
   "private": true,
   "main": "dist/main.mjs",
   "scripts": {
     "bundle": "node scripts/bundle.mjs",
-    "start": "pnpm --filter @musike/web build && node scripts/bundle.mjs && electron .",
-    "dist": "pnpm --filter @musike/web build && node scripts/bundle.mjs && electron-builder --win nsis --publish never",
-    "dist:mac": "pnpm --filter @musike/web build && node scripts/bundle.mjs && electron-builder --mac --publish never",
-    "dist:linux": "pnpm --filter @musike/web build && node scripts/bundle.mjs && electron-builder --linux --publish never",
+    "start": "pnpm --filter @genuinefan-player/web build && node scripts/bundle.mjs && electron .",
+    "dist": "pnpm --filter @genuinefan-player/web build && node scripts/bundle.mjs && electron-builder --win nsis --publish never",
+    "dist:mac": "pnpm --filter @genuinefan-player/web build && node scripts/bundle.mjs && electron-builder --mac --publish never",
+    "dist:linux": "pnpm --filter @genuinefan-player/web build && node scripts/bundle.mjs && electron-builder --linux --publish never",
     "typecheck": "tsc --noEmit"
   },
   "build": {
-    "appId": "app.musike.desktop",
-    "productName": "Musike",
-    "copyright": "Musike",
+    "appId": "vip.genuinefan.player.desktop",
+    "productName": "GenuineFan Player",
+    "copyright": "Copyright (c) 2026 Ernani Neto (Musike, MIT license). Modified as GenuineFan Player.",
     "directories": {
       "output": "out",
       "buildResources": "build"
@@ -47,7 +47,7 @@
         }
       ],
       "icon": "build/icon.ico",
-      "artifactName": "Musike-Setup-${version}.${ext}"
+      "artifactName": "GenuineFan-Player-Setup-${version}.${ext}"
     },
     "mac": {
       "target": [
@@ -59,7 +59,7 @@
           ]
         }
       ],
-      "icon": "build/icon-mac.png",
+      "icon": "build/icon.icns",
       "category": "public.app-category.music",
       "minimumSystemVersion": "12.0",
       "darkModeSupport": true,
@@ -85,18 +85,18 @@
         }
       ],
       "icon": "build/icon.png",
-      "executableName": "musike",
+      "executableName": "genuinefan-player",
       "syncDesktopName": true,
       "category": "AudioVideo",
-      "synopsis": "Your music, uninterrupted.",
-      "description": "A personal music player for YouTube's catalog: songs and music videos, with no ads and no account.",
-      "maintainer": "Musike <https://github.com/Ernani1234/musike>"
+      "synopsis": "GenuineFan Player (private experiment).",
+      "description": "GenuineFan Player: a private, non-commercial GenuineFan experiment, inspired by Musike (MIT).",
+      "maintainer": "GenuineFan Player <https://github.com/michaeljgilmore/genuinefan-player>"
     },
     "deb": {
-      "packageName": "musike"
+      "packageName": "genuinefan-player"
     },
     "dmg": {
-      "title": "Musike ${version}"
+      "title": "GenuineFan Player ${version}"
     },
     "nsis": {
       "oneClick": false,
@@ -104,7 +104,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Musike",
+      "shortcutName": "GenuineFan Player",
       "runAfterFinish": true,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",

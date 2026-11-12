@@ -1,5 +1,5 @@
 {
-  "name": "musike",
+  "name": "genuinefan-player",
   "private": true,
   "version": "1.5.1",
   "type": "module",
@@ -7,9 +7,10 @@
     "dev": "pnpm --parallel --filter ./server --filter ./web dev",
     "build": "pnpm --filter ./web build",
     "start": "pnpm --filter ./server start",
-    "desktop": "pnpm --filter musike-desktop start",
-    "installer": "pnpm --filter musike-desktop dist",
-    "typecheck": "pnpm -r typecheck"
+    "desktop": "pnpm --filter genuinefan-player-desktop start",
+    "installer": "pnpm --filter genuinefan-player-desktop dist",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter ./server test"
   },
   "packageManager": "pnpm@10.14.0"
 }

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { getT } from "../i18n";
 import { api } from "../lib/api";
+import { recordLike } from "../lib/listening";
 import type { Library, Playlist, Track } from "../lib/types";
 import { toast } from "./ui";
 
@@ -46,6 +47,7 @@ export const useLibrary = create<LibraryState>((set, get) => ({
     try {
       const { favorites } = on ? await api.addFavorite(track) : await api.removeFavorite(track.id);
       set({ favorites });
+      recordLike(track, on);
       toast(on ? getT().toasts.addedFavorite : getT().toasts.removedFavorite);
     } catch (e) {
       set({ favorites: prev });
@@ -61,6 +63,7 @@ export const useLibrary = create<LibraryState>((set, get) => ({
     try {
       const { favorites } = await api.addFavorites(fresh);
       set({ favorites });
+      for (const t of fresh.slice(0, 50)) recordLike(t, true);
       toast(fresh.length === 1 ? getT().toasts.addedFavorite : getT().toasts.addedFavorites(fresh.length));
     } catch (e) {
       set({ favorites: prev });

@@ -27,7 +27,7 @@ const run = (cmd, args, cwd = app) => {
 
 // The web app with the backend running inside the app, then the copy Capacitor makes of it for the Xcode project
 // (from the folder with capacitor.config.ts).
-run("pnpm", ["--filter", "@musike/web", "build:native"], join(root, ".."));
+run("pnpm", ["--filter", "@genuinefan-player/web", "build:native"], join(root, ".."));
 run("pnpm", ["exec", "cap", "sync", "ios"], root);
 run("xcodebuild", [
   "-project", "App.xcodeproj",
@@ -53,7 +53,7 @@ rmSync(staging, { recursive: true, force: true });
 mkdirSync(join(staging, "Payload"), { recursive: true });
 run("cp", ["-R", bundle, join(staging, "Payload", "Musike.app")]);
 const suffix = process.env.MUSIKE_SERVER_URL ? "-server" : "";
-const target = join(root, "..", "release", `Musike-Setup-${version}-iOS${suffix}.ipa`);
+const target = join(root, "..", "release", `GenuineFan-Player-Setup-${version}-iOS${suffix}.ipa`);
 mkdirSync(dirname(target), { recursive: true });
 rmSync(target, { force: true });
 run("zip", ["-qry", target, "Payload"], staging);

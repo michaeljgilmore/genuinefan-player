@@ -11,8 +11,8 @@ const en = {
   emptyQuery: "Type something to search.",
   searchFailed: "Search is unavailable right now ({detail}). Try again in a moment.",
   missingTitle: "Give the song's title.",
-  notBackup: "This file isn't a Musike backup.",
-  newerBackup: "This backup was made by a newer Musike. Update the app to import it.",
+  notBackup: "This file isn't a GenuineFan Player (or Musike) backup.",
+  newerBackup: "This backup was made by a newer GenuineFan Player. Update the app to import it.",
   idMismatch: "The ID doesn't match.",
   tracksRequired: "Send a list of tracks.",
   invalidGenre: "Invalid genre.",
@@ -31,9 +31,9 @@ const en = {
   albumUnavailable: "Couldn't open this album right now. Try again.",
   albumNotFound: "Album not found.",
   invalidAlbum: "Invalid album.",
-  ytdlpMissing: "yt-dlp wasn't found on this computer. Open Settings in Musike to install it.",
+  ytdlpMissing: "yt-dlp wasn't found on this computer. Open Settings in GenuineFan Player to install it.",
   ytdlpTimeout: "yt-dlp took too long to answer.",
-  ytdlpCantRun: "Couldn't run yt-dlp ({error}). Open Settings in Musike.",
+  ytdlpCantRun: "Couldn't run yt-dlp ({error}). Open Settings in GenuineFan Player.",
   botCheck: "YouTube is asking this connection to prove it's not a bot. If you're on a VPN, turn it off and try again.",
   videoUnavailable: "This video isn't available on YouTube.",
   ageRestricted: "Age-restricted video. It needs cookies from a signed-in account.",
@@ -53,6 +53,13 @@ const en = {
   toolMissing: "{tool} wasn't found on this computer.",
   downloadFailed: "Downloading {tool} failed (HTTP {status}).",
   ffmpegPackage: "Unexpected FFmpeg package.",
+  providerDisabled:
+    "The music provider \"{provider}\" is turned off on this server. The YouTube path is a local-development experiment only (set GENUINEFAN_YOUTUBE_EXPERIMENTAL=1 to use it locally).",
+  invalidListeningEvent: "Invalid listening event.",
+  fanSyncNotAllowed: "Turn on Fan Signals recording and sharing in Settings first.",
+  fanSyncNotLinked: "Link this player to your GenuineFan account first.",
+  fanSyncNoEndpoint:
+    "GenuineFan isn't accepting player summaries yet (no GENUINEFAN_FAN_SIGNALS_ENDPOINT configured). Nothing was sent.",
 };
 
 export type MsgKey = keyof typeof en;
@@ -62,8 +69,8 @@ const pt: Record<MsgKey, string> = {
   emptyQuery: "Digite algo para buscar.",
   searchFailed: "A busca está indisponível agora ({detail}). Tente de novo em instantes.",
   missingTitle: "Informe o título da música.",
-  notBackup: "Este arquivo não é um backup do Musike.",
-  newerBackup: "Backup de uma versão mais nova do Musike. Atualize o app para importar.",
+  notBackup: "Este arquivo não é um backup do GenuineFan Player (ou do Musike).",
+  newerBackup: "Backup de uma versão mais nova do GenuineFan Player. Atualize o app para importar.",
   idMismatch: "ID não confere.",
   tracksRequired: "Envie uma lista de faixas.",
   invalidGenre: "Gênero inválido.",
@@ -82,9 +89,9 @@ const pt: Record<MsgKey, string> = {
   albumUnavailable: "Não foi possível abrir este álbum agora. Tente de novo.",
   albumNotFound: "Álbum não encontrado.",
   invalidAlbum: "Álbum inválido.",
-  ytdlpMissing: "O yt-dlp não foi encontrado neste computador. Abra Ajustes no Musike para instalar.",
+  ytdlpMissing: "O yt-dlp não foi encontrado neste computador. Abra Ajustes no GenuineFan Player para instalar.",
   ytdlpTimeout: "O yt-dlp demorou demais para responder.",
-  ytdlpCantRun: "Não foi possível executar o yt-dlp ({error}). Abra Ajustes no Musike.",
+  ytdlpCantRun: "Não foi possível executar o yt-dlp ({error}). Abra Ajustes no GenuineFan Player.",
   botCheck: "O YouTube está pedindo para esta conexão provar que não é um robô. Se estiver usando VPN, desligue e tente de novo.",
   videoUnavailable: "Vídeo indisponível no YouTube.",
   ageRestricted: "Vídeo com restrição de idade. Requer cookies de uma conta logada.",
@@ -104,6 +111,13 @@ const pt: Record<MsgKey, string> = {
   toolMissing: "{tool} não encontrado neste computador.",
   downloadFailed: "Download de {tool} falhou (HTTP {status}).",
   ffmpegPackage: "Pacote do FFmpeg inesperado.",
+  providerDisabled:
+    "O provedor de música \"{provider}\" está desligado neste servidor. O caminho do YouTube é só um experimento de desenvolvimento local (defina GENUINEFAN_YOUTUBE_EXPERIMENTAL=1 para usar localmente).",
+  invalidListeningEvent: "Evento de audição inválido.",
+  fanSyncNotAllowed: "Ative a gravação e o compartilhamento de Fan Signals nas Configurações primeiro.",
+  fanSyncNotLinked: "Conecte este player à sua conta GenuineFan primeiro.",
+  fanSyncNoEndpoint:
+    "A GenuineFan ainda não recebe resumos do player (GENUINEFAN_FAN_SIGNALS_ENDPOINT não configurado). Nada foi enviado.",
 };
 
 const CATALOG: Record<Lang, Record<MsgKey, string>> = { en, "pt-BR": pt };

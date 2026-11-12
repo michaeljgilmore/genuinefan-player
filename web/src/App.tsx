@@ -18,6 +18,7 @@ import { capabilities } from "./lib/api";
 import { cn } from "./lib/format";
 import { legacyRedirect, NOW_PLAYING_HASH, paths } from "./lib/routes";
 import { usePlayer } from "./player/player";
+import { useFandom } from "./stores/fandom";
 import { useLibrary } from "./stores/library";
 import { openSettings, useSystem } from "./stores/system";
 import { toast, useUi } from "./stores/ui";
@@ -26,6 +27,7 @@ import Artist from "./views/Artist";
 import BatchSearch from "./views/BatchSearch";
 import Collection from "./views/Collection";
 import Genre from "./views/Genre";
+import Fandom from "./views/Fandom";
 import Home from "./views/Home";
 import Library from "./views/Library";
 import Search from "./views/Search";
@@ -48,6 +50,8 @@ export default function App() {
 
   useEffect(() => {
     void loadLibrary();
+    // Fan Signals consent decides whether the player sends events at all.
+    void useFandom.getState().load();
   }, [loadLibrary]);
 
   // Check yt-dlp shortly after start and say so once if something needs doing (not on Android: no yt-dlp there).
@@ -129,6 +133,7 @@ export default function App() {
               <Route path="/search/artist/:id" element={<Artist />} />
               <Route path="/search/album/:id" element={<Album />} />
               <Route path={paths.library} element={<Library />} />
+              <Route path={paths.fandom} element={<Fandom />} />
               <Route path={paths.favorites} element={<Collection kind="favorites" />} />
               <Route path={paths.history} element={<Collection kind="history" />} />
               <Route path="/playlist/:id" element={<Collection kind="playlist" />} />

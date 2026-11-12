@@ -5,11 +5,12 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const serverUrl = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.MUSIKE_SERVER_URL;
 
 const config: CapacitorConfig = {
-  appId: "app.musike.android",
-  appName: "Musike",
+  // GenuineFan Player's own IDs (Android: vip.genuinefan.player.android, iOS: vip.genuinefan.player.ios in the Xcode project).
+  appId: "vip.genuinefan.player.android",
+  appName: "GenuineFan Player",
   // The web app built in Android mode: same UI, backend running on the phone (see web/src/native).
   webDir: "../web/dist-native",
-  backgroundColor: "#0B0C0F",
+  backgroundColor: "#0D0B1C",
   android: {
     // Music keeps loading while the screen is off or another app is in front.
     allowMixedContent: false,
@@ -18,7 +19,7 @@ const config: CapacitorConfig = {
     // The status bar area is padded by the app itself, like on Android.
     contentInset: "never",
     scrollEnabled: true,
-    backgroundColor: "#0B0C0F",
+    backgroundColor: "#0D0B1C",
   },
   ...(serverUrl ? { server: { url: serverUrl, cleartext: false } } : {}),
   plugins: {

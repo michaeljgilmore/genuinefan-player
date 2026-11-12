@@ -34,7 +34,7 @@ export function PageHeader({
       )}
     >
       <div className="flex h-14 items-center gap-3 px-4 md:h-16 md:px-6">
-        <LogoMark className="size-7 shrink-0 text-accent-text md:hidden" />
+        <LogoMark className="size-7 shrink-0 md:hidden" />
         {title && <h1 className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight md:text-xl">{title}</h1>}
         {!title && <span className="flex-1" />}
         {actions}

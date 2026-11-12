@@ -1,5 +1,7 @@
 # Musike: Design System
 
+> **GenuineFan Player fork:** this is Musike's original design system, kept for reference. The fork's default accent is GenuineFan violet `#6D3FD0` (with GenuineFan pink `#C72E7B` and Musike's Volt `#C3EC52` as presets); the mark and type are unchanged for now (TODO: official GenuineFan Player artwork).
+
 ## Design read
 
 App de player de música pessoal para uso diário em celular e desktop, linguagem escura, simples e levemente gamer (atalhos de teclado, números em mono, indicadores vivos), apoiado em Tailwind v4 + Motion + Phosphor Icons.

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { getT, useT } from "../i18n";
 import { api, capabilities, explainStreamError, streamSource, systemMedia, type ApiError, type ErrorCode } from "../lib/api";
 import { createAudio } from "../lib/audio";
+import { listenEnd, listenRepeat, listenSeeked, listenStart, listenTick } from "../lib/listening";
 import { shuffled } from "../lib/format";
 import type { Track } from "../lib/types";
 import { useLibrary } from "../stores/library";
@@ -77,6 +78,8 @@ let loaded: { id: string; kind: Kind; quality: Quality } | null = null;
 let pendingSeek = 0;
 let token = 0;
 let recordedToken = -1;
+/** Whether the current load starts the track from the top (a new listen) rather than resuming it (a reload). */
+let freshLoad = true;
 
 const STORAGE_KEY = "musike:player";
 
@@ -185,6 +188,7 @@ export const usePlayer = create<PlayerState>((set, get) => {
     }
 
     token++;
+    freshLoad = !opts.startAt || loaded?.id !== track.id;
     loaded = { id: track.id, kind, quality: s.quality };
     pendingSeek = opts.startAt ?? 0;
     const autoplay = opts.autoplay !== false;
@@ -244,6 +248,7 @@ export const usePlayer = create<PlayerState>((set, get) => {
     if (!track || recordedToken === token) return;
     recordedToken = token;
     useLibrary.getState().recordPlay(track);
+    listenStart(track, { fresh: freshLoad });
     // Warm up the next track (and, in Video mode, find and resolve its clip) so it starts quickly.
     const upcoming = s.queue[s.index + 1];
     if (!upcoming) return;
@@ -253,14 +258,18 @@ export const usePlayer = create<PlayerState>((set, get) => {
 
   function onEnded() {
     const s = get();
+    const finished = s.queue[s.index];
     if (s.repeat === "one") {
       const media = activeMedia();
       if (media) {
+        // Same media element, no reload: close this listen and count the next one as a repeat.
+        if (finished) listenRepeat(finished);
         media.currentTime = 0;
         play(media);
       }
       return;
     }
+    listenEnd();
     if (s.index < s.queue.length - 1) return load(s.index + 1);
     if (s.repeat === "all" && s.queue.length) return load(0);
     if (s.autoRadio) return void continueWithRadio();
@@ -336,6 +345,7 @@ export const usePlayer = create<PlayerState>((set, get) => {
     });
     media.addEventListener("timeupdate", () => {
       if (!isActive() || pendingSeek > 0) return;
+      listenTick(media.currentTime, media.duration);
       if (Math.abs(media.currentTime - get().position) >= 0.2) set({ position: media.currentTime });
       syncSystemMedia(); // throttled on the other side
     });
@@ -343,7 +353,11 @@ export const usePlayer = create<PlayerState>((set, get) => {
       if (!isActive() || !media.buffered.length) return;
       set({ buffered: media.buffered.end(media.buffered.length - 1) });
     });
-    media.addEventListener("seeked", () => isActive() && syncPositionState());
+    media.addEventListener("seeked", () => {
+      if (!isActive()) return;
+      listenSeeked(media.currentTime);
+      syncPositionState();
+    });
     media.addEventListener("ended", () => isActive() && onEnded());
     media.addEventListener("error", () => isActive() && media.getAttribute("src") && onError(media));
   }

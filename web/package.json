@@ -1,5 +1,5 @@
 {
-  "name": "@musike/web",
+  "name": "@genuinefan-player/web",
   "private": true,
   "version": "1.5.1",
   "type": "module",
@@ -15,8 +15,8 @@
     "@capacitor/core": "8.5.3",
     "@capacitor/filesystem": "8.1.5",
     "@capacitor/share": "8.0.3",
-    "@fontsource-variable/geist": "5.3.0",
     "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "5.3.0",
     "@phosphor-icons/react": "2.1.10",
     "motion": "14.1.0",
     "react": "19.3.0",

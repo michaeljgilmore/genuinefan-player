@@ -23,7 +23,7 @@ if (gradle.status !== 0) process.exit(gradle.status ?? 1);
 const outputs = join(android, "app", "build", "outputs", "apk", "release");
 const signed = join(outputs, "app-release.apk");
 const apk = existsSync(signed) ? signed : join(outputs, "app-release-unsigned.apk");
-const target = join(root, "..", "release", `Musike-Setup-${version}-Android${apk === signed ? "" : "-unsigned"}.apk`);
+const target = join(root, "..", "release", `GenuineFan-Player-Setup-${version}-Android${apk === signed ? "" : "-unsigned"}.apk`);
 mkdirSync(dirname(target), { recursive: true });
 copyFileSync(apk, target);
 console.log(`\n${target}`);

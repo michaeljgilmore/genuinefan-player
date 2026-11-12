@@ -1,9 +1,10 @@
-# Musike on any machine with Docker: docker compose up -d, then open http://<this machine>:4180
+# GenuineFan Player (inspired by Musike) with Docker, for private local testing only: docker compose up -d,
+# then open http://<this machine>:4180. Built from this folder (the upstream ghcr.io/ernani1234/musike image
+# doesn't include the fork's changes). The image sets NODE_ENV=production, so the youtube-experimental
+# provider is OFF unless GENUINEFAN_YOUTUBE_EXPERIMENTAL is set below.
 services:
   musike:
-    image: ghcr.io/ernani1234/musike:latest
-    # Or build it from this folder instead:
-    # build: .
+    build: .
     container_name: musike
     ports:
       - "4180:4180"
@@ -14,6 +15,8 @@ services:
       # Optional, see the README: cookies for YouTube's bot checks, region for search results.
       # YTDLP_EXTRA_ARGS: "--cookies /data/cookies.txt"
       # MUSIKE_LOCATION: "US"
+      # Local experiments only; never on a public deployment (YouTube Terms of Service):
+      # GENUINEFAN_YOUTUBE_EXPERIMENTAL: "1"
       MUSIKE_CACHE_MAX_MB: "2048"
     restart: unless-stopped
 

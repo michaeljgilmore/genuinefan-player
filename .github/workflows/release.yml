@@ -1,4 +1,9 @@
-# Builds every download for a release tag (v1.4.0) and attaches them to a draft GitHub release:
+# GenuineFan Player fork: this workflow is inherited from upstream Musike. Its automatic tag trigger is removed
+# so pushing a v* tag to the fork never builds or publishes anything. It can still be started by hand from the
+# Actions tab, which would publish artifacts publicly: don't, while playback relies on YouTube extraction
+# (see docs/genuinefan-integration.md).
+#
+# Upstream description: builds every download for a release tag (v1.4.0) and attaches them to a draft GitHub release:
 # the Windows installer, the macOS apps (Apple Silicon and Intel), the Linux packages, the Android APK and the
 # unsigned iOS app.
 # The draft only goes public when it's published by hand, after checking it.
@@ -10,8 +15,6 @@
 name: Release
 
 on:
-  push:
-    tags: ["v*"]
   workflow_dispatch:
 
 permissions:
@@ -28,7 +31,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter musike-desktop dist
+      - run: pnpm --filter genuinefan-player-desktop dist
       - name: Check downloads
         shell: bash
         run: |
@@ -52,7 +55,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Ad-hoc signed (no Apple Developer ID): enough to run on Apple Silicon; Gatekeeper asks once.
-      - run: pnpm --filter musike-desktop dist:mac
+      - run: pnpm --filter genuinefan-player-desktop dist:mac
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
       - name: Check downloads
@@ -78,7 +81,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # AppImage and .deb, for x64 and arm64 (the arm64 ones are packaged here too: nothing is compiled).
-      - run: pnpm --filter musike-desktop dist:linux
+      - run: pnpm --filter genuinefan-player-desktop dist:linux
       - name: Check downloads
         shell: bash
         run: |
@@ -115,7 +118,7 @@ jobs:
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/musike-release.jks"
           echo "MUSIKE_KEYSTORE=$RUNNER_TEMP/musike-release.jks" >> "$GITHUB_ENV"
-      - run: pnpm --filter @musike/mobile apk
+      - run: pnpm --filter @genuinefan-player/mobile apk
         env:
           MUSIKE_KEYSTORE_PASSWORD: ${{ secrets.MUSIKE_KEYSTORE_PASSWORD }}
           MUSIKE_KEY_ALIAS: ${{ secrets.MUSIKE_KEY_ALIAS }}
@@ -143,7 +146,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Unsigned on purpose: AltStore, SideStore or Sideloadly sign it with the user's own Apple ID when installing.
-      - run: pnpm --filter @musike/mobile ipa
+      - run: pnpm --filter @genuinefan-player/mobile ipa
       - name: Check downloads
         shell: bash
         run: |

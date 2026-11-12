@@ -18,6 +18,7 @@ import { EmptyState, PageHeader } from "../components/Page";
 import { TrackList, TrackListSkeleton } from "../components/TrackList";
 import { MD, useMediaQuery } from "../hooks/useMediaQuery";
 import { api } from "../lib/api";
+import { recordSearch } from "../lib/listening";
 import { useT } from "../i18n";
 import { cn } from "../lib/format";
 import { paths } from "../lib/routes";
@@ -123,6 +124,7 @@ export default function Search() {
     found
       .then(() => {
         setState("ok");
+        recordSearch(q);
         const next = [q, ...readRecent().filter((r) => r.toLowerCase() !== q.toLowerCase())].slice(0, 8);
         saveRecent(next);
         setRecent(next);

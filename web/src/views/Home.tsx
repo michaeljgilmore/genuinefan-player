@@ -1,4 +1,4 @@
-import { ClockCounterClockwiseIcon, HeartIcon, MagnifyingGlassIcon, PlayIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, ClockCounterClockwiseIcon, HeartIcon, MagnifyingGlassIcon, PlayIcon, SealCheckIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router";
 import { Artwork } from "../components/Artwork";
@@ -10,6 +10,7 @@ import { paths } from "../lib/routes";
 import type { Track } from "../lib/types";
 import { usePlayer } from "../player/player";
 import { useAppearance } from "../stores/appearance";
+import { useFandom } from "../stores/fandom";
 import { useLibrary } from "../stores/library";
 
 function Shortcut({ to, label, tracks, cover }: { to: string; label: string; tracks: Track[]; cover: ReactNode }) {
@@ -51,6 +52,42 @@ function RecentCard({ track, onPlay }: { track: Track; onPlay: () => void }) {
   );
 }
 
+/** GenuineFan's pitch on the home page: your listening is your proof, with a snapshot of your top fandom. */
+function FandomHero() {
+  const t = useT();
+  const f = t.fandom;
+  const state = useFandom((s) => s.state);
+  const top = state?.report.artists.slice(0, 3) ?? [];
+  const on = !!state?.consent.recording;
+  return (
+    <Link
+      to={paths.fandom}
+      className="gf-hero group mx-4 flex flex-col gap-4 rounded-[24px] p-5 ring-1 ring-line transition-transform active:scale-[0.99] md:mx-6 md:flex-row md:items-center md:p-7"
+    >
+      <LogoMark className="size-16 shrink-0 md:size-20" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-bold tracking-[0.2em] text-accent-text uppercase">{f.eyebrow}</p>
+        <p className="mt-1 text-2xl font-extrabold tracking-tight md:text-3xl">{f.heroTitle}</p>
+        {on && top.length > 0 ? (
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {top.map((a) => (
+              <li key={a.artistKey} className="flex items-center gap-1 rounded-full bg-surface-1/70 px-3 py-1 text-xs font-semibold ring-1 ring-line">
+                <SealCheckIcon size={13} weight="fill" className="text-accent-text" />
+                {f.topLine(a.artistName, f.tiers[a.tier], a.score)}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-1 max-w-[60ch] text-sm text-fg-2">{on ? f.heroBodyOn : f.heroBody}</p>
+        )}
+      </div>
+      <span className="flex h-11 shrink-0 items-center gap-2 self-start rounded-full gf-gradient px-5 text-sm font-semibold md:self-center">
+        {on ? f.heroCta : f.enable} <ArrowRightIcon size={16} weight="bold" className="transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </Link>
+  );
+}
+
 export default function Home() {
   const { favorites, playlists, history, status } = useLibrary();
   const playList = usePlayer((s) => s.playList);
@@ -64,15 +101,19 @@ export default function Home() {
       <PageHeader />
 
       <div className="px-4 pt-2 pb-6 md:px-6 md:pt-8">
-        <h1 className="text-[28px] leading-tight font-semibold tracking-tight md:text-4xl">{t.time.greeting(new Date().getHours())}</h1>
+        <h1 className="text-[28px] leading-tight font-extrabold tracking-tight md:text-4xl">{t.time.greeting(new Date().getHours())}</h1>
+      </div>
+
+      <div className="pb-8">
+        <FandomHero />
       </div>
 
       {status === "loading" && <TrackListSkeleton rows={6} />}
 
       {empty && (
         <div className="mx-4 flex flex-col items-start gap-5 rounded-[20px] bg-surface-2 p-6 ring-1 ring-line md:mx-6 md:flex-row md:items-center md:p-8">
-          <span className="grid size-16 shrink-0 place-items-center rounded-[18px] bg-accent text-accent-ink">
-            <LogoMark className="size-10" />
+          <span className="grid size-16 shrink-0 place-items-center rounded-[18px] bg-surface-3">
+            <MagnifyingGlassIcon size={30} weight="bold" className="text-accent-text" />
           </span>
           <div className="flex-1">
             <p className="text-xl font-semibold tracking-tight">{t.home.startTitle}</p>

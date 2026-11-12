@@ -22,6 +22,8 @@ const userData = app.getPath("userData");
 process.env.MUSIKE_DATA_DIR = path.join(userData, "data");
 process.env.MUSIKE_CACHE_DIR = path.join(userData, "cache");
 process.env.MUSIKE_BIN_DIR = path.join(userData, "bin");
+process.env.GENUINEFAN_PLATFORM ??= `desktop-${process.platform}`;
+process.env.GENUINEFAN_PLAYER_VERSION ??= app.getVersion();
 process.env.MUSIKE_WEB_DIST = app.isPackaged ? path.join(process.resourcesPath, "web") : path.resolve(here, "..", "..", "web", "dist");
 
 // A copy of the library from before each update, in userData/backups (the installer makes one too).
@@ -37,8 +39,8 @@ const loadServer = async () => ({
 });
 
 const THEME = {
-  dark: { color: "#0B0C0F", symbolColor: "#ECEEF2" },
-  light: { color: "#E9EBEF", symbolColor: "#12141A" },
+  dark: { color: "#0D0B1C", symbolColor: "#EEECF6" },
+  light: { color: "#EFEDF6", symbolColor: "#17123A" },
 };
 const TITLEBAR_HEIGHT = 40;
 
@@ -114,7 +116,7 @@ function createMainWindow(url: string): BrowserWindow {
     minWidth: 380,
     minHeight: 560,
     show: false,
-    title: "Musike",
+    title: "GenuineFan Player",
     icon: path.join(here, "icon.png"),
     backgroundColor: THEME.dark.color,
     // Our own title bar (drawn by the web app) with the native window buttons on top of it:

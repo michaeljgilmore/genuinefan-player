@@ -18,10 +18,10 @@ COPY web/package.json web/
 COPY desktop/package.json desktop/
 COPY mobile/package.json mobile/
 # Only the server and web packages: the desktop and Android apps aren't needed here.
-RUN pnpm install --frozen-lockfile --filter @musike/server --filter @musike/web
+RUN pnpm install --frozen-lockfile --filter @genuinefan-player/server --filter @genuinefan-player/web
 COPY server server
 COPY web web
-RUN pnpm --filter @musike/web build && pnpm --filter @musike/server bundle
+RUN pnpm --filter @genuinefan-player/web build && pnpm --filter @genuinefan-player/server bundle
 
 # ---- Runtime: Node, FFmpeg, yt-dlp and Deno ----
 FROM node:${NODE_VERSION}-bookworm-slim

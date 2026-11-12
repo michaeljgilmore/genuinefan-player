@@ -14,44 +14,54 @@
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0b0c0f;
-  --surface-1: #121318;
-  --surface-2: #181a20;
-  --surface-3: #20232b;
-  --surface-4: #2a2e38;
+  /* GenuineFan ink (#17123A) deepened for a dark player; surfaces keep a violet tint. */
+  --bg: #0d0b1c;
+  --surface-1: #141127;
+  --surface-2: #1a1731;
+  --surface-3: #231f3e;
+  --surface-4: #2e294d;
   --line: rgb(255 255 255 / 0.07);
   --line-strong: rgb(255 255 255 / 0.12);
-  --fg: #eceef2;
-  --fg-2: #9ba1ad;
-  --fg-3: #6b717d;
-  --accent: #c3ec52;
-  --accent-ink: #0b0c0f;
-  --accent-text: #c3ec52;
-  --accent-soft: rgb(195 236 82 / 0.12);
+  --fg: #eeecf6;
+  --fg-2: #a6a1bd;
+  --fg-3: #736e8c;
+  /* GenuineFan violet (#6D3FD0); text shade lightened for contrast. Must match lib/accent.ts DEFAULT_ACCENT. */
+  --accent: #6d3fd0;
+  --accent-ink: #ffffff;
+  --accent-text: #9675dd;
+  --accent-soft: rgb(109 63 208 / 0.13);
   --highlight: rgb(255 255 255 / 0.06);
-  --scrim: rgb(5 6 8 / 0.72);
+  --scrim: rgb(6 5 14 / 0.72);
   --danger: #ff7a6b;
+  /* genuine-fan/src/config/theme.css */
+  --gf-pink: #c72e7b;
+  --gf-violet: #6d3fd0;
+  --gf-blue: #3778e2;
+  --gf-ink: #17123a;
+  --gf-gradient: linear-gradient(90deg, #c72e7b 0%, #6d3fd0 100%);
+  --gf-wordmark: linear-gradient(90deg, #4a9be0 0%, #9d7bff 52%, #d566d2 100%);
 }
 
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #e9ebef;
+  --bg: #efedf6;
   --surface-1: #ffffff;
-  --surface-2: #f2f3f6;
-  --surface-3: #e4e7ec;
-  --surface-4: #d6dae1;
+  --surface-2: #f8f6fc;
+  --surface-3: #ece8f5;
+  --surface-4: #ddd7ec;
   --line: rgb(15 18 25 / 0.08);
   --line-strong: rgb(15 18 25 / 0.14);
-  --fg: #12141a;
-  --fg-2: #555b67;
-  --fg-3: #7d8390;
-  --accent: #c3ec52;
-  --accent-ink: #0b0c0f;
-  --accent-text: #4a6300;
-  --accent-soft: rgb(110 150 0 / 0.12);
+  --fg: #17123a;
+  --fg-2: #5d5878;
+  --fg-3: #6e6884;
+  --accent: #6d3fd0;
+  --accent-ink: #ffffff;
+  --accent-text: #6d3fd0;
+  --accent-soft: rgb(109 63 208 / 0.12);
   --highlight: rgb(255 255 255 / 0.8);
   --scrim: rgb(20 22 28 / 0.45);
   --danger: #c4372a;
+  --gf-wordmark: linear-gradient(90deg, #005b97 0%, #875ef6 52%, #c64fc3 100%);
 }
 
 @theme inline {
@@ -71,7 +81,8 @@
   --color-accent-soft: var(--accent-soft);
   --color-scrim: var(--scrim);
   --color-danger: var(--danger);
-  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  /* GenuineFan's typeface (genuine-fan/index.html loads Plus Jakarta Sans); OFL, bundled via Fontsource. */
+  --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --radius-tile: 14px;
@@ -92,7 +103,6 @@
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
-    font-feature-settings: "ss01";
   }
   button {
     cursor: pointer;
@@ -237,4 +247,37 @@
   *::after {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* GenuineFan brand pieces (Brand.tsx, Your Fandom, Home). */
+.gf-wordmark {
+  background: var(--gf-wordmark);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.gf-gradient {
+  background: var(--gf-gradient);
+  color: #fff;
+}
+.gf-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(40rem 18rem at 0% 0%, rgb(109 63 208 / 0.45), transparent 70%),
+    radial-gradient(34rem 18rem at 100% 0%, rgb(199 46 123 / 0.32), transparent 70%),
+    radial-gradient(30rem 16rem at 60% 120%, rgb(55 120 226 / 0.28), transparent 70%),
+    var(--surface-2);
+}
+[data-theme="light"] .gf-hero {
+  background:
+    radial-gradient(40rem 18rem at 0% 0%, rgb(228 214 255 / 0.9), transparent 70%),
+    radial-gradient(34rem 18rem at 100% 0%, rgb(255 227 194 / 0.8), transparent 70%),
+    radial-gradient(30rem 16rem at 60% 120%, rgb(216 237 228 / 0.8), transparent 70%),
+    var(--surface-1);
+}
+.gf-ring {
+  --p: 0;
+  background: conic-gradient(var(--gf-pink) 0deg, var(--gf-violet) calc(var(--p) * 3.6deg), var(--surface-4) 0);
 }

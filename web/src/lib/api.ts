@@ -3,7 +3,12 @@ import {
   ApiError,
   type Channel,
   type ErrorCode,
+  type FanConsent,
+  type FanSignalsPayload,
+  type FanSignalsState,
+  type FanSyncResult,
   type ImportResult,
+  type ListeningEventInput,
   type MusikeApi,
   type Prepared,
   type SystemInfo,
@@ -12,7 +17,7 @@ import {
 } from "./apiTypes";
 import type { AlbumCard, AlbumPage, ArtistPage, Genre, GenreArtist, GenrePage, Library, Playlist, Track } from "./types";
 
-// The HTTP backend: the Musike server (web app, desktop app). The Android build swaps this module for native/api.ts.
+// The HTTP backend: the GenuineFan Player server (web app, desktop app). The Android build swaps this module for native/api.ts.
 export * from "./apiTypes";
 
 /** The server answers errors (and YouTube Music answers names, like genres) in the app's language. */
@@ -76,6 +81,17 @@ export const api: MusikeApi = {
 
   importLibrary: (backup: unknown, mode: "merge" | "replace") =>
     request<ImportResult>("/api/library/import", { method: "POST", json: { backup, mode } }),
+
+  recordListening: (e: ListeningEventInput) => request<unknown>("/api/listening", { method: "POST", json: e }).then(() => {}),
+  clearListening: () => request<void>("/api/listening", { method: "DELETE" }),
+  fanSignals: (tz: number) => request<FanSignalsState>(`/api/fan-signals?tz=${tz}`),
+  setFanConsent: (patch) =>
+    request<{ consent: FanConsent }>("/api/fan-signals/consent", { method: "PUT", json: patch }).then((r) => r.consent),
+  startFanLink: () => request<{ url: string; deviceId: string }>("/api/fan-signals/link", { method: "POST" }),
+  unlinkFan: () => request<void>("/api/fan-signals/link", { method: "DELETE" }),
+  previewFanSync: (tz: number) => request<{ payload: FanSignalsPayload }>(`/api/fan-signals/preview?tz=${tz}`).then((r) => r.payload),
+  syncFanSignals: (tz: number) =>
+    request<{ result: FanSyncResult }>(`/api/fan-signals/sync?tz=${tz}`, { method: "POST" }).then((r) => r.result),
 
   system: () => request<SystemInfo>("/api/system"),
   updateYtdlp: (channel: Channel) => request<SystemJob>("/api/system/ytdlp", { method: "POST", json: { channel } }),

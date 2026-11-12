@@ -1,10 +1,13 @@
-# Builds the Docker image for every release tag (v1.2.0 → :1.2.0, :1.2 and :latest) and publishes it
+# GenuineFan Player fork: this workflow is inherited from upstream Musike. Its automatic tag trigger is removed
+# so pushing a v* tag to the fork never builds or publishes anything. It can still be started by hand from the
+# Actions tab, which would publish artifacts publicly: don't, while playback relies on YouTube extraction
+# (see docs/genuinefan-integration.md).
+#
+# Upstream description: builds the Docker image for every release tag (v1.2.0 → :1.2.0, :1.2 and :latest) and publishes it
 # to GitHub Container Registry as ghcr.io/<owner>/musike. Can also be started by hand from the Actions tab.
 name: Docker image
 
 on:
-  push:
-    tags: ["v*"]
   workflow_dispatch:
 
 permissions:

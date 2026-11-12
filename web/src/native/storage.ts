@@ -1,8 +1,6 @@
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
 import type { LibraryStorage } from "../../../server/src/library";
 
-const FILE = "library.json";
-const TMP = "library.tmp.json";
 const where = { directory: Directory.Data, encoding: Encoding.UTF8 } as const;
 
 async function readText(path: string): Promise<string | null> {
@@ -19,11 +17,16 @@ async function readText(path: string): Promise<string | null> {
  * so a crash mid-write can't leave a half-written library; if it happens between the two steps, the temp file
  * is the newest complete copy.
  */
-export const nativeStorage: LibraryStorage = {
+const appFile = (FILE: string, TMP: string): LibraryStorage => ({
   read: async () => (await readText(FILE)) ?? (await readText(TMP)),
   write: async (json) => {
     await Filesystem.writeFile({ path: TMP, data: json, ...where });
     await Filesystem.deleteFile({ path: FILE, directory: Directory.Data }).catch(() => {});
     await Filesystem.rename({ from: TMP, to: FILE, directory: Directory.Data, toDirectory: Directory.Data });
   },
-};
+});
+
+export const nativeStorage: LibraryStorage = appFile("library.json", "library.tmp.json");
+
+/** GenuineFan listening events (server/src/listening.ts), next to the library. Local only. */
+export const nativeListeningStorage: LibraryStorage = appFile("listening.json", "listening.tmp.json");

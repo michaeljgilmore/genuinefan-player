@@ -1,4 +1,4 @@
-package app.musike.android;
+package vip.genuinefan.player.android;
 
 import android.app.UiModeManager;
 import android.content.Context;
